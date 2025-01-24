@@ -1,20 +1,25 @@
-import express from 'express';
-import { json } from 'body-parser';
-import cookieSession from 'cookie-session';
-import { createRouter } from './routes/create';
+import { app } from './app';
+import mongoose from 'mongoose';
 
-const app = express();
-app.set('trust proxy', true);
-app.use(json())
-app.use(
-    cookieSession({
-        signed: false,
-        secure: process.env.NODE_ENV !== 'test'
-    })
-);
+const start = async () => {
+    if(!process.env.JWT_KEY) {
+        throw new Error('JWT env not defined');
+    }
 
-app.use(createRouter);
+    if(!process.env.MONGO_URI) { 
+        throw new Error('MONGO_URI env not defined');
+    }
 
-app.listen(3000, () => {
-    console.log('Listening on port 3000!');
-});
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log(`Connected to tickets MongoDb ${process.env.MONGO_URI}`);
+    } catch (error) {
+        console.error(error);    
+    }
+
+    app.listen(3000, () => {
+        console.log('Listening on port 3000!');
+    });
+};
+
+start();
