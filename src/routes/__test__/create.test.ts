@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from "../../app";
 import { Ticket } from '../../models/ticket';
+import { session } from '../../test/helpers/testHelper';
 
 it('route exists', async () => {
     const response = await request(app)
@@ -18,7 +19,7 @@ it('can`t acces access if user is not signed in', async () => {
 });
 
 it('can access if user is signed in', async () => {
-    const cookie = await global.signin();
+    const cookie = await session();
     const response = await request(app)
         .post('/api/tickets/create')
         .set('Cookie', cookie)
@@ -28,7 +29,7 @@ it('can access if user is signed in', async () => {
 });
 
 it('returns an error if an invalid title is provided', async () => {
-    const cookie = await global.signin();
+    const cookie = await session();
     await request(app)
         .post('/api/tickets/create')
         .set('Cookie', cookie)
@@ -40,7 +41,7 @@ it('returns an error if an invalid title is provided', async () => {
 });
 
 it('returns an error if an invalid price is provided', async () => {
-    const cookie = await global.signin();
+    const cookie = await session();
     await request(app)
         .post('/api/tickets/create')
         .set('Cookie', cookie)
